@@ -11,12 +11,12 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -29,19 +29,9 @@ jobs:
       - name: Run tests with Allure results
         run: pytest -s -v --alluredir=allure-results
 
-      - name: Install Allure
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y default-jre
-          wget https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
-          tar -xzf allure-2.29.0.tgz -C /opt/
-          echo "/opt/allure-2.29.0/bin" >> $GITHUB_PATH
-
-      - name: Generate Allure report
-        run: allure generate allure-results --clean -o reports
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+      # Генерация Allure-отчёта и публикация на gh-pages
+      - name: Generate and publish Allure report
+        uses: simple-elf/allure-report-action@master
         with:
-          name: allure_report
-          path: reports/
+          allure_results: allure-results
+          github_token: ${{ secrets.GITHUB_TOKEN }}

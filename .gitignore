@@ -3,3 +3,4 @@ __pycache__
 .pytest_cache
 test_lesson.py
 test.txt
+allure-results
